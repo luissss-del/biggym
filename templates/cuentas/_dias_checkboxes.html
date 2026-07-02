@@ -1,0 +1,17 @@
+<style>
+    .dias-check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+    .dia-check-item {
+        background: #0d0d15; border: 1px solid #2a2a3a; border-radius: 10px;
+        padding: 12px; display: flex; align-items: center; gap: 8px;
+        font-size: 14px; cursor: pointer;
+    }
+    .dia-check-item input { width: 18px; height: 18px; accent-color: #ff5e62; }
+</style>
+<div class="dias-check-grid">
+    {% for value, label in dias_choices %}
+    <label class="dia-check-item">
+        <input type="checkbox" name="dias" value="{{ value }}">
+        {{ label }}
+    </label>
+    {% endfor %}
+</div>

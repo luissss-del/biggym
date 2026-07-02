@@ -2,72 +2,94 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>{% block title %}BigGym{% endblock %}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html, body {
             font-family: 'Space Grotesk', sans-serif;
             background: radial-gradient(circle at top, #1a1a2e 0%, #0d0d15 100%);
             color: #f0f0f0;
             min-height: 100vh;
+            width: 100%;
+        }
+        body {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
+        }
+        .wrapper {
+            width: 100%;
+            max-width: 480px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 18px 30px;
         }
         .card {
             background: #16161f;
             border: 1px solid #2a2a3a;
             border-radius: 16px;
-            padding: 40px;
+            padding: 28px 24px;
             width: 100%;
-            max-width: 400px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
         h1 {
-            font-size: 28px;
+            font-size: 26px;
             margin-bottom: 4px;
             background: linear-gradient(90deg, #ff5e62, #ff9966);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            font-weight: 800;
         }
-        .subtitle { color: #8a8a9a; margin-bottom: 24px; font-size: 14px; }
+        h2 { font-size: 20px; font-weight: 700; }
+        .subtitle { color: #8a8a9a; margin-bottom: 22px; font-size: 14px; }
         .input-field {
             width: 100%;
-            padding: 12px 14px;
+            padding: 14px;
             margin-bottom: 14px;
             background: #0d0d15;
             border: 1px solid #2a2a3a;
-            border-radius: 8px;
+            border-radius: 10px;
             color: #f0f0f0;
-            font-size: 14px;
+            font-size: 16px;
             font-family: inherit;
         }
         .input-field:focus { outline: none; border-color: #ff5e62; }
         select.input-field { appearance: none; }
-        button {
+        button, .btn {
             width: 100%;
-            padding: 12px;
+            padding: 15px;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             background: linear-gradient(90deg, #ff5e62, #ff9966);
             color: #0d0d15;
             font-weight: 700;
-            font-size: 15px;
+            font-size: 16px;
             cursor: pointer;
-            margin-top: 8px;
+            margin-top: 6px;
+            font-family: inherit;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
         }
-        button:hover { opacity: 0.9; }
+        button:active, .btn:active { transform: scale(0.98); }
+        .btn-secondary {
+            background: #1e1e2a;
+            color: #f0f0f0;
+            border: 1px solid #2a2a3a;
+        }
         .switch-link { text-align: center; margin-top: 18px; font-size: 14px; color: #8a8a9a; }
         .switch-link a { color: #ff9966; text-decoration: none; font-weight: 600; }
         .errorlist { color: #ff5e62; font-size: 13px; margin-bottom: 10px; list-style: none; }
         .messages { list-style: none; margin-bottom: 14px; }
         .messages li { color: #ff5e62; font-size: 13px; }
+        a { color: inherit; }
     </style>
 </head>
 <body>
-    <div class="card">
+    <div class="wrapper">
         {% block content %}{% endblock %}
     </div>
 </body>

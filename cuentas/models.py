@@ -45,3 +45,43 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.nombre_completo} ({self.documento})"
+
+class DiaEntrenamiento(models.Model):
+    DIAS_CHOICES = (
+        ('lunes', 'Lunes'),
+        ('martes', 'Martes'),
+        ('miercoles', 'Miércoles'),
+        ('jueves', 'Jueves'),
+        ('viernes', 'Viernes'),
+        ('sabado', 'Sábado'),
+        ('domingo', 'Domingo'),
+    )
+
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='dias_entrenamiento')
+    dia = models.CharField(max_length=10, choices=DIAS_CHOICES)
+    parte_cuerpo = models.CharField(max_length=100, verbose_name="Parte del cuerpo")
+
+    class Meta:
+        unique_together = ('usuario', 'dia')
+        ordering = ['id']
+
+    def __str__(self):
+        return f"{self.usuario.nombre_completo} - {self.dia}"
+
+    def orden_dia(self):
+        orden = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo']
+        return orden.index(self.dia)
+
+
+class Ejercicio(models.Model):
+    dia_entrenamiento = models.ForeignKey(DiaEntrenamiento, on_delete=models.CASCADE, related_name='ejercicios')
+    nombre = models.CharField(max_length=150)
+    repeticiones = models.CharField(max_length=50, verbose_name="Repeticiones/series")
+    completado = models.BooleanField(default=False)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['fecha_creacion']
+
+    def __str__(self):
+        return f"{self.nombre} - {self.dia_entrenamiento.dia}"

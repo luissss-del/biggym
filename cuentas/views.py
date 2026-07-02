@@ -1,8 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import RegistroForm, LoginForm
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from .forms import RegistroForm, LoginForm, ConfigurarDiasForm, EjercicioForm
+from .models import DiaEntrenamiento, Ejercicio
 
 
 def registro_view(request):
@@ -49,4 +52,88 @@ def logout_view(request):
 
 @login_required
 def dashboard_view(request):
-    return render(request, 'cuentas/dashboard.html')
+    dias = DiaEntrenamiento.objects.filter(usuario=request.user)
+
+    if not dias.exists():
+        return redirect('configurar_dias')
+
+    dias_ordenados = sorted(dias, key=lambda d: d.orden_dia())
+
+    return render(request, 'cuentas/dashboard.html', {'dias': dias_ordenados})
+
+
+@login_required
+def configurar_dias_view(request):
+    if request.method == 'POST':
+        form = ConfigurarDiasForm(request.POST)
+        if form.is_valid():
+            dias_seleccionados = form.cleaned_data['dias']
+            parte_cuerpo = form.cleaned_data['parte_cuerpo']
+
+            for dia in dias_seleccionados:
+                DiaEntrenamiento.objects.update_or_create(
+                    usuario=request.user,
+                    dia=dia,
+                    defaults={'parte_cuerpo': parte_cuerpo}
+                )
+            return redirect('dashboard')
+    else:
+        form = ConfigurarDiasForm()
+
+    return render(request, 'cuentas/configurar_dias.html', {'form': form})
+
+
+@login_required
+def detalle_dia_view(request, dia_id):
+    dia_entrenamiento = get_object_or_404(DiaEntrenamiento, id=dia_id, usuario=request.user)
+    ejercicios = dia_entrenamiento.ejercicios.all()
+
+    if request.method == 'POST':
+        form = EjercicioForm(request.POST)
+        if form.is_valid():
+            ejercicio = form.save(commit=False)
+            ejercicio.dia_entrenamiento = dia_entrenamiento
+            ejercicio.save()
+            return redirect('detalle_dia', dia_id=dia_entrenamiento.id)
+    else:
+        form = EjercicioForm()
+
+    return render(request, 'cuentas/detalle_dia.html', {
+        'dia_entrenamiento': dia_entrenamiento,
+        'ejercicios': ejercicios,
+        'form': form,
+    })
+
+
+@login_required
+@require_POST
+def toggle_ejercicio_view(request, ejercicio_id):
+    ejercicio = get_object_or_404(Ejercicio, id=ejercicio_id, dia_entrenamiento__usuario=request.user)
+    ejercicio.completado = not ejercicio.completado
+    ejercicio.save()
+    return JsonResponse({'completado': ejercicio.completado})
+
+
+@login_required
+@require_POST
+def eliminar_ejercicio_view(request, ejercicio_id):
+    ejercicio = get_object_or_404(Ejercicio, id=ejercicio_id, dia_entrenamiento__usuario=request.user)
+    dia_id = ejercicio.dia_entrenamiento.id
+    ejercicio.delete()
+    return redirect('detalle_dia', dia_id=dia_id)
+
+
+@login_required
+@require_POST
+def agregar_dia_view(request):
+    form = ConfigurarDiasForm(request.POST)
+    if form.is_valid():
+        dias_seleccionados = form.cleaned_data['dias']
+        parte_cuerpo = form.cleaned_data['parte_cuerpo']
+        for dia in dias_seleccionados:
+            DiaEntrenamiento.objects.update_or_create(
+                usuario=request.user,
+                dia=dia,
+                defaults={'parte_cuerpo': parte_cuerpo}
+            )
+    return redirect('dashboard')
