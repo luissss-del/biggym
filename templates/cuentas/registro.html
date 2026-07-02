@@ -1,0 +1,23 @@
+{% extends 'cuentas/base.html' %}
+{% block title %}Crear cuenta - BigGym{% endblock %}
+{% block content %}
+    <h1>Crea tu cuenta</h1>
+    <p class="subtitle">Empieza a registrar tu progreso</p>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.nombre_completo }}
+        {{ form.documento }}
+        {{ form.sexo }}
+        {{ form.password1 }}
+        {{ form.password2 }}
+        {% if form.errors %}
+            <ul class="errorlist">
+                {% for field in form %}{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}{% endfor %}
+            </ul>
+        {% endif %}
+        <button type="submit">Registrarme</button>
+    </form>
+
+    <p class="switch-link">¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión</a></p>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'cuentas/base.html' %}
+{% block title %}Iniciar sesión - BigGym{% endblock %}
+{% block content %}
+    <h1>BigGym</h1>
+    <p class="subtitle">Inicia sesión para continuar tu rutina</p>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.documento }}
+        {{ form.password }}
+        <button type="submit">Entrar</button>
+    </form>
+
+    <p class="switch-link">¿No tienes cuenta? <a href="{% url 'registro' %}">Regístrate</a></p>
+{% endblock %}

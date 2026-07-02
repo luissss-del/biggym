@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BigGym{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: radial-gradient(circle at top, #1a1a2e 0%, #0d0d15 100%);
+            color: #f0f0f0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card {
+            background: #16161f;
+            border: 1px solid #2a2a3a;
+            border-radius: 16px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 4px;
+            background: linear-gradient(90deg, #ff5e62, #ff9966);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle { color: #8a8a9a; margin-bottom: 24px; font-size: 14px; }
+        .input-field {
+            width: 100%;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+            background: #0d0d15;
+            border: 1px solid #2a2a3a;
+            border-radius: 8px;
+            color: #f0f0f0;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        .input-field:focus { outline: none; border-color: #ff5e62; }
+        select.input-field { appearance: none; }
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #ff5e62, #ff9966);
+            color: #0d0d15;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        button:hover { opacity: 0.9; }
+        .switch-link { text-align: center; margin-top: 18px; font-size: 14px; color: #8a8a9a; }
+        .switch-link a { color: #ff9966; text-decoration: none; font-weight: 600; }
+        .errorlist { color: #ff5e62; font-size: 13px; margin-bottom: 10px; list-style: none; }
+        .messages { list-style: none; margin-bottom: 14px; }
+        .messages li { color: #ff5e62; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
