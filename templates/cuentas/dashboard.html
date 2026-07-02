@@ -69,25 +69,35 @@
 <div class="empty-msg">Todavía no tienes días configurados.</div>
 {% endif %}
 
-<div id="modal-add" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:100; align-items:center; justify-content:center; padding:20px;">
-    <div class="card" style="max-width:420px;">
+<div id="modal-add" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:100; align-items:center; justify-content:center; padding:20px; overflow-y:auto;">
+    <div class="card" style="max-width:420px; max-height:85vh; overflow-y:auto;">
         <h2>Agregar día</h2>
-        <p class="subtitle">Selecciona nuevos días y la parte del cuerpo</p>
+        <p class="subtitle">Selecciona días y qué vas a entrenar</p>
         <form method="post" action="{% url 'agregar_dia' %}">
             {% csrf_token %}
-            <div class="dias-check-grid">
-               <label class="dia-check-item"><input type="checkbox" name="dias" value="lunes"> Lunes</label>
-               <label class="dia-check-item"><input type="checkbox" name="dias" value="martes"> Martes</label>
-               <label class="dia-check-item"><input type="checkbox" name="dias" value="miercoles"> Miércoles</label>
-               <label class="dia-check-item"><input type="checkbox" name="dias" value="jueves"> Jueves</label>
-               <label class="dia-check-item"><input type="checkbox" name="dias" value="viernes"> Viernes</label>
-               <label class="dia-check-item"><input type="checkbox" name="dias" value="sabado"> Sábado</label>
-               <label class="dia-check-item"><input type="checkbox" name="dias" value="domingo"> Domingo</label>
+            {% for value, label in dias_choices %}
+            <div style="background:#0d0d15; border:1px solid #2a2a3a; border-radius:10px; padding:12px; margin-bottom:10px;">
+                <label style="display:flex; align-items:center; gap:8px; font-size:14px; cursor:pointer;">
+                    <input type="checkbox" name="dias" value="{{ value }}" onchange="toggleModalPart('{{ value }}')" style="width:18px; height:18px; accent-color:#ff5e62;">
+                    {{ label }}
+                </label>
+                <div id="modal-parte-{{ value }}" style="display:none; margin-top:10px;">
+                    <input type="text" name="parte_cuerpo_{{ value }}" class="input-field" placeholder="¿Qué vas a entrenar el {{ label }}?" style="margin-bottom:0;">
+                </div>
             </div>
-            <input type="text" name="parte_cuerpo" class="input-field" placeholder="Ej: Espalda y bíceps" required>
+            {% endfor %}
             <button type="submit">Guardar</button>
             <div class="btn btn-secondary" onclick="document.getElementById('modal-add').style.display='none';" style="margin-top:10px;">Cancelar</div>
         </form>
     </div>
 </div>
+
+<script>
+function toggleModalPart(dia) {
+    const box = document.getElementById('modal-parte-' + dia);
+    const checkbox = document.querySelector(`#modal-add input[value="${dia}"]`);
+    box.style.display = checkbox.checked ? 'block' : 'none';
+    if (!checkbox.checked) box.querySelector('input').value = '';
+}
+</script>
 {% endblock %}

@@ -59,28 +59,35 @@ def dashboard_view(request):
 
     dias_ordenados = sorted(dias, key=lambda d: d.orden_dia())
 
-    return render(request, 'cuentas/dashboard.html', {'dias': dias_ordenados})
+    return render(request, 'cuentas/dashboard.html', {
+        'dias': dias_ordenados,
+        'dias_choices': DiaEntrenamiento.DIAS_CHOICES,
+    })
 
 
 @login_required
 def configurar_dias_view(request):
     if request.method == 'POST':
-        form = ConfigurarDiasForm(request.POST)
-        if form.is_valid():
-            dias_seleccionados = form.cleaned_data['dias']
-            parte_cuerpo = form.cleaned_data['parte_cuerpo']
-
+        dias_seleccionados = request.POST.getlist('dias')
+        if dias_seleccionados:
             for dia in dias_seleccionados:
-                DiaEntrenamiento.objects.update_or_create(
-                    usuario=request.user,
-                    dia=dia,
-                    defaults={'parte_cuerpo': parte_cuerpo}
-                )
+                parte_cuerpo = request.POST.get(f'parte_cuerpo_{dia}', '').strip()
+                if parte_cuerpo:
+                    DiaEntrenamiento.objects.update_or_create(
+                        usuario=request.user,
+                        dia=dia,
+                        defaults={'parte_cuerpo': parte_cuerpo}
+                    )
             return redirect('dashboard')
-    else:
-        form = ConfigurarDiasForm()
+        else:
+            messages.error(request, 'Selecciona al menos un día')
 
-    return render(request, 'cuentas/configurar_dias.html', {'form': form})
+    return render(request, 'cuentas/configurar_dias.html', {
+        'dias': DiaEntrenamiento.DIAS_CHOICES
+    })
+
+
+
 
 
 @login_required
@@ -126,11 +133,10 @@ def eliminar_ejercicio_view(request, ejercicio_id):
 @login_required
 @require_POST
 def agregar_dia_view(request):
-    form = ConfigurarDiasForm(request.POST)
-    if form.is_valid():
-        dias_seleccionados = form.cleaned_data['dias']
-        parte_cuerpo = form.cleaned_data['parte_cuerpo']
-        for dia in dias_seleccionados:
+    dias_seleccionados = request.POST.getlist('dias')
+    for dia in dias_seleccionados:
+        parte_cuerpo = request.POST.get(f'parte_cuerpo_{dia}', '').strip()
+        if parte_cuerpo:
             DiaEntrenamiento.objects.update_or_create(
                 usuario=request.user,
                 dia=dia,

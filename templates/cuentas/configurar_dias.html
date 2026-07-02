@@ -2,13 +2,16 @@
 {% block title %}Configura tu rutina - BigGym{% endblock %}
 {% block content %}
 <style>
-    .dias-check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 18px; }
-    .dia-check-item {
+    .dia-block {
         background: #0d0d15; border: 1px solid #2a2a3a; border-radius: 10px;
-        padding: 12px; display: flex; align-items: center; gap: 8px;
-        font-size: 14px; cursor: pointer;
+        padding: 12px; margin-bottom: 10px;
+    }
+    .dia-check-item {
+        display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer;
     }
     .dia-check-item input { width: 18px; height: 18px; accent-color: #ff5e62; }
+    .parte-input { display: none; margin-top: 10px; }
+    .parte-input.show { display: block; }
     .intro-icon { font-size: 40px; text-align: center; margin-bottom: 10px; }
 </style>
 
@@ -17,30 +20,39 @@
     <h1 style="text-align:center;">¡Bienvenido!</h1>
     <p class="subtitle" style="text-align:center;">Configura tu rutina para empezar</p>
 
+    {% if messages %}
+        <ul class="messages">{% for m in messages %}<li>{{ m }}</li>{% endfor %}</ul>
+    {% endif %}
+
     <form method="post">
         {% csrf_token %}
 
-        <label style="font-size:14px; font-weight:600; display:block; margin-bottom:10px;">¿Qué días entrenas?</label>
-        <div class="dias-check-grid">
-            <label class="dia-check-item"><input type="checkbox" name="dias" value="lunes"> Lunes</label>
-            <label class="dia-check-item"><input type="checkbox" name="dias" value="martes"> Martes</label>
-            <label class="dia-check-item"><input type="checkbox" name="dias" value="miercoles"> Miércoles</label>
-            <label class="dia-check-item"><input type="checkbox" name="dias" value="jueves"> Jueves</label>
-            <label class="dia-check-item"><input type="checkbox" name="dias" value="viernes"> Viernes</label>
-            <label class="dia-check-item"><input type="checkbox" name="dias" value="sabado"> Sábado</label>
-            <label class="dia-check-item"><input type="checkbox" name="dias" value="domingo"> Domingo</label>
+        {% for value, label in dias %}
+        <div class="dia-block">
+            <label class="dia-check-item">
+                <input type="checkbox" name="dias" value="{{ value }}" onchange="togglePartInput('{{ value }}')">
+                {{ label }}
+            </label>
+            <div class="parte-input" id="parte-{{ value }}">
+                <input type="text" name="parte_cuerpo_{{ value }}" class="input-field" placeholder="¿Qué vas a entrenar el {{ label }}?" style="margin-top:10px; margin-bottom:0;">
+            </div>
         </div>
+        {% endfor %}
 
-        <label style="font-size:14px; font-weight:600; display:block; margin-bottom:10px;">¿Qué parte del cuerpo vas a trabajar esos días?</label>
-        <input type="text" name="parte_cuerpo" class="input-field" placeholder="Ej: Pecho y tríceps" required>
-
-        {% if form.errors %}
-            <ul class="errorlist">
-                {% for field in form %}{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}{% endfor %}
-            </ul>
-        {% endif %}
-
-        <button type="submit">Empezar mi rutina</button>
+        <button type="submit" style="margin-top:16px;">Empezar mi rutina</button>
     </form>
 </div>
+
+<script>
+function togglePartInput(dia) {
+    const box = document.getElementById('parte-' + dia);
+    const checkbox = document.querySelector(`input[value="${dia}"]`);
+    if (checkbox.checked) {
+        box.classList.add('show');
+    } else {
+        box.classList.remove('show');
+        box.querySelector('input').value = '';
+    }
+}
+</script>
 {% endblock %}
