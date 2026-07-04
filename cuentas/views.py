@@ -26,7 +26,7 @@ def registro_view(request):
 
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('dashboard')
+        logout(request)
 
     if request.method == 'POST':
         form = LoginForm(request.POST)
