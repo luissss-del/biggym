@@ -1,21 +1,23 @@
 {% extends 'cuentas/base.html' %}
 {% block title %}Iniciar sesión - BigGym{% endblock %}
 {% block content %}
-    <h1>BigGym</h1>
-    <p class="subtitle">Inicia sesión para continuar tu rutina</p>
+<div class="card" style="margin-top:40px;">
+    <div class="eyebrow">Acceso</div>
+    <h1 class="display">BIGGYM</h1>
+    <div class="stripe"></div>
+    <p class="subtitle">Documento y contraseña para entrar</p>
 
     {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}<li>{{ message }}</li>{% endfor %}
-        </ul>
+        <ul class="msg-tag">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>
     {% endif %}
 
     <form method="post">
         {% csrf_token %}
         {{ form.documento }}
         {{ form.password }}
-        <button type="submit">Entrar</button>
+        <button type="submit" class="btn">Entrar</button>
     </form>
 
-    <p class="switch-link">¿No tienes cuenta? <a href="{% url 'registro' %}">Regístrate</a></p>
+    <p class="link-row">¿No tienes cuenta? <a href="{% url 'registro' %}">Regístrate</a></p>
+</div>
 {% endblock %}

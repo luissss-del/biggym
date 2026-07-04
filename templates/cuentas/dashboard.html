@@ -1,93 +1,56 @@
 {% extends 'cuentas/base.html' %}
 {% block title %}Inicio - BigGym{% endblock %}
 {% block content %}
-<style>
-    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-    .greeting { font-size: 22px; font-weight: 700; }
-    .greeting span { color: #ff9966; }
-    .logout-icon {
-        width: 40px; height: 40px; border-radius: 10px;
-        background: #16161f; border: 1px solid #2a2a3a;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 18px; cursor: pointer; text-decoration: none;
-    }
-    .section-title {
-        font-size: 13px; text-transform: uppercase; letter-spacing: 1px;
-        color: #8a8a9a; margin: 22px 0 12px; font-weight: 600;
-    }
-    .day-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .day-card {
-        background: #16161f; border: 1px solid #2a2a3a; border-radius: 14px;
-        padding: 18px 14px; text-decoration: none; color: #f0f0f0;
-        transition: border-color 0.2s;
-        display: flex; flex-direction: column; gap: 4px;
-        min-height: 92px;
-    }
-    .day-card:active { border-color: #ff5e62; }
-    .day-name { font-size: 17px; font-weight: 700; }
-    .day-body { font-size: 12px; color: #8a8a9a; line-height: 1.4; }
-    .day-progress {
-        margin-top: 8px; font-size: 11px; font-weight: 700;
-        color: #ff9966;
-    }
-    .add-day-card {
-        background: transparent; border: 2px dashed #2a2a3a; border-radius: 14px;
-        padding: 18px 14px; text-decoration: none; color: #8a8a9a;
-        display: flex; align-items: center; justify-content: center;
-        flex-direction: column; gap: 6px; min-height: 92px; font-size: 13px;
-        font-weight: 600;
-    }
-    .add-day-card .plus { font-size: 26px; color: #ff5e62; }
-    .empty-msg {
-        text-align: center; color: #8a8a9a; font-size: 14px;
-        margin-top: 40px; line-height: 1.6;
-    }
-</style>
 
-<div class="top-bar">
-    <div class="greeting">Hola, <span>{{ request.user.nombre_completo }}</span> 💪</div>
-    <a href="{% url 'logout' %}" class="logout-icon">⏻</a>
+<div class="topbar">
+    <div>
+        <div class="eyebrow">Bienvenido</div>
+        <h1 class="display" style="font-size:30px;">{{ request.user.nombre_completo }}</h1>
+    </div>
+    <a href="{% url 'logout' %}" class="icon-btn">⏻</a>
 </div>
+<div class="stripe" style="margin-top:12px;"></div>
 
-<div class="section-title">Tus días de entrenamiento</div>
+<div class="eyebrow" style="margin-top:24px;">Rutina semanal</div>
 
 {% if dias %}
-<div class="day-grid">
+<div class="plate-grid">
     {% for dia in dias %}
-    <a href="{% url 'detalle_dia' dia.id %}" class="day-card">
-        <div class="day-name">{{ dia.get_dia_display }}</div>
-        <div class="day-body">{{ dia.parte_cuerpo }}</div>
-        <div class="day-progress">{{ dia.ejercicios.count }} ejercicio{{ dia.ejercicios.count|pluralize:"s" }}</div>
+    <a href="{% url 'detalle_dia' dia.id %}" class="plate-card">
+        <div class="plate-disc">{{ dia.dia|slice:":3"|upper }}</div>
+        <div class="plate-body">{{ dia.parte_cuerpo }}</div>
+        <div class="plate-count">{{ dia.ejercicios.count }} EJERCICIO{{ dia.ejercicios.count|pluralize:"S" }}</div>
     </a>
     {% endfor %}
-    <a href="#" onclick="document.getElementById('modal-add').style.display='flex'; return false;" class="add-day-card">
+    <a href="#" onclick="document.getElementById('modal-add').style.display='flex'; return false;" class="add-plate">
         <span class="plus">+</span>
         Agregar día
     </a>
 </div>
 {% else %}
-<div class="empty-msg">Todavía no tienes días configurados.</div>
+<div class="empty-note">SIN DÍAS CONFIGURADOS<br>TOCA + PARA EMPEZAR</div>
 {% endif %}
 
-<div id="modal-add" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:100; align-items:center; justify-content:center; padding:20px; overflow-y:auto;">
-    <div class="card" style="max-width:420px; max-height:85vh; overflow-y:auto;">
-        <h2>Agregar día</h2>
-        <p class="subtitle">Selecciona días y qué vas a entrenar</p>
+<div id="modal-add" class="modal-overlay">
+    <div class="card">
+        <div class="eyebrow">Nuevo día</div>
+        <h2 class="display">AGREGAR DÍA</h2>
+        <div class="stripe"></div>
         <form method="post" action="{% url 'agregar_dia' %}">
             {% csrf_token %}
             {% for value, label in dias_choices %}
-            <div style="background:#0d0d15; border:1px solid #2a2a3a; border-radius:10px; padding:12px; margin-bottom:10px;">
-                <label style="display:flex; align-items:center; gap:8px; font-size:14px; cursor:pointer;">
-                    <input type="checkbox" name="dias" value="{{ value }}" onchange="toggleModalPart('{{ value }}')" style="width:18px; height:18px; accent-color:#ff5e62;">
+            <div class="day-block">
+                <label class="day-check">
+                    <input type="checkbox" name="dias" value="{{ value }}" onchange="toggleModalPart('{{ value }}')">
                     {{ label }}
                 </label>
-                <div id="modal-parte-{{ value }}" style="display:none; margin-top:10px;">
-                    <input type="text" name="parte_cuerpo_{{ value }}" class="input-field" placeholder="¿Qué vas a entrenar el {{ label }}?" style="margin-bottom:0;">
+                <div id="modal-parte-{{ value }}" class="day-part-input">
+                    <input type="text" name="parte_cuerpo_{{ value }}" class="field" placeholder="¿Qué vas a entrenar el {{ label }}?" style="margin-bottom:0;">
                 </div>
             </div>
             {% endfor %}
-            <button type="submit">Guardar</button>
-            <div class="btn btn-secondary" onclick="document.getElementById('modal-add').style.display='none';" style="margin-top:10px;">Cancelar</div>
+            <button type="submit" class="btn">Guardar</button>
+            <div class="btn btn-ghost" onclick="document.getElementById('modal-add').style.display='none';" style="margin-top:10px;">Cancelar</div>
         </form>
     </div>
 </div>
@@ -96,7 +59,7 @@
 function toggleModalPart(dia) {
     const box = document.getElementById('modal-parte-' + dia);
     const checkbox = document.querySelector(`#modal-add input[value="${dia}"]`);
-    box.style.display = checkbox.checked ? 'block' : 'none';
+    box.classList.toggle('show', checkbox.checked);
     if (!checkbox.checked) box.querySelector('input').value = '';
 }
 </script>

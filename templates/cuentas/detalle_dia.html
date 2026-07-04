@@ -1,94 +1,49 @@
 {% extends 'cuentas/base.html' %}
 {% block title %}{{ dia_entrenamiento.get_dia_display }} - BigGym{% endblock %}
 {% block content %}
-<style>
-    .top-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-    .back-btn {
-        width: 40px; height: 40px; border-radius: 10px;
-        background: #16161f; border: 1px solid #2a2a3a;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 18px; text-decoration: none; color: #f0f0f0;
-    }
-    .day-title { font-size: 22px; font-weight: 800; }
-    .day-subtitle { font-size: 13px; color: #8a8a9a; }
 
-    .ejercicio-item {
-        background: #16161f; border: 1px solid #2a2a3a; border-radius: 12px;
-        padding: 16px; display: flex; align-items: center; gap: 12px;
-        margin-bottom: 10px;
-    }
-    .ejercicio-info { flex: 1; }
-    .ejercicio-nombre { font-size: 15px; font-weight: 700; }
-    .ejercicio-nombre.done { text-decoration: line-through; color: #8a8a9a; }
-    .ejercicio-reps { font-size: 12px; color: #8a8a9a; margin-top: 2px; }
-
-    .check-box {
-        width: 30px; height: 30px; border-radius: 8px;
-        border: 2px solid #2a2a3a; background: #0d0d15;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 16px; cursor: pointer; flex-shrink: 0;
-    }
-    .check-box.checked {
-        background: #22c55e; border-color: #22c55e; color: #0d0d15;
-    }
-    .delete-btn {
-        color: #ff5e62; font-size: 18px; cursor: pointer; flex-shrink: 0;
-        background: none; border: none; padding: 6px;
-    }
-
-    .empty-ej { text-align: center; color: #8a8a9a; font-size: 14px; margin: 30px 0; }
-
-    .fab {
-        position: fixed; bottom: 24px; right: 50%; transform: translateX(230px);
-        width: 56px; height: 56px; border-radius: 50%;
-        background: linear-gradient(90deg, #ff5e62, #ff9966);
-        display: flex; align-items: center; justify-content: center;
-        font-size: 26px; color: #0d0d15; box-shadow: 0 6px 20px rgba(255,94,98,0.4);
-        cursor: pointer; border: none; z-index: 50;
-    }
-    @media (max-width: 480px) { .fab { right: 24px; transform: none; } }
-</style>
-
-<div class="top-bar">
-    <a href="{% url 'dashboard' %}" class="back-btn">←</a>
-    <div>
-        <div class="day-title">{{ dia_entrenamiento.get_dia_display }}</div>
-        <div class="day-subtitle">{{ dia_entrenamiento.parte_cuerpo }}</div>
+<div class="topbar">
+    <a href="{% url 'dashboard' %}" class="icon-btn">←</a>
+    <div style="text-align:right;">
+        <div class="eyebrow" style="margin-bottom:0;">{{ dia_entrenamiento.parte_cuerpo }}</div>
     </div>
 </div>
+<h1 class="display" style="font-size:34px; margin-top:8px;">{{ dia_entrenamiento.get_dia_display|upper }}</h1>
+<div class="stripe" style="margin-top:10px; margin-bottom:20px;"></div>
 
 {% if ejercicios %}
     {% for ej in ejercicios %}
-    <div class="ejercicio-item" id="ej-{{ ej.id }}">
-        <div class="check-box {% if ej.completado %}checked{% endif %}" onclick="toggleEjercicio({{ ej.id }})" id="check-{{ ej.id }}">
+    <div class="ex-row" id="ej-{{ ej.id }}">
+        <div class="plate-check {% if ej.completado %}checked{% endif %}" onclick="toggleEjercicio({{ ej.id }})" id="check-{{ ej.id }}">
             {% if ej.completado %}✓{% endif %}
         </div>
-        <div class="ejercicio-info">
-            <div class="ejercicio-nombre {% if ej.completado %}done{% endif %}" id="nombre-{{ ej.id }}">{{ ej.nombre }}</div>
-            <div class="ejercicio-reps">{{ ej.repeticiones }}</div>
+        <div class="ex-info">
+            <div class="ex-name {% if ej.completado %}done{% endif %}" id="nombre-{{ ej.id }}">{{ ej.nombre }}</div>
+            <div class="ex-reps">{{ ej.repeticiones }}</div>
         </div>
         <form method="post" action="{% url 'eliminar_ejercicio' ej.id %}" onsubmit="return confirm('¿Eliminar este ejercicio?');">
             {% csrf_token %}
-            <button type="submit" class="delete-btn">🗑</button>
+            <button type="submit" class="del-btn">✕</button>
         </form>
     </div>
     {% endfor %}
 {% else %}
-    <div class="empty-ej">Todavía no hay ejercicios para este día.<br>Toca el botón + para agregar uno.</div>
+    <div class="empty-note">SIN EJERCICIOS TODAVÍA<br>TOCA + PARA AGREGAR UNO</div>
 {% endif %}
 
 <button class="fab" onclick="document.getElementById('modal-ej').style.display='flex';">+</button>
 
-<div id="modal-ej" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:100; align-items:center; justify-content:center; padding:20px;">
-    <div class="card" style="max-width:420px;">
-        <h2>Nuevo ejercicio</h2>
-        <p class="subtitle">{{ dia_entrenamiento.get_dia_display }}</p>
+<div id="modal-ej" class="modal-overlay">
+    <div class="card">
+        <div class="eyebrow">{{ dia_entrenamiento.get_dia_display }}</div>
+        <h2 class="display">NUEVO EJERCICIO</h2>
+        <div class="stripe"></div>
         <form method="post">
             {% csrf_token %}
             {{ form.nombre }}
             {{ form.repeticiones }}
-            <button type="submit">Agregar</button>
-            <div class="btn btn-secondary" onclick="document.getElementById('modal-ej').style.display='none';" style="margin-top:10px;">Cancelar</div>
+            <button type="submit" class="btn">Agregar</button>
+            <div class="btn btn-ghost" onclick="document.getElementById('modal-ej').style.display='none';" style="margin-top:10px;">Cancelar</div>
         </form>
     </div>
 </div>
@@ -97,23 +52,16 @@
 function toggleEjercicio(id) {
     fetch(`/ejercicio/${id}/toggle/`, {
         method: 'POST',
-        headers: {
-            'X-CSRFToken': '{{ csrf_token }}',
-            'Content-Type': 'application/x-www-form-urlencoded',
-        }
+        headers: { 'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/x-www-form-urlencoded' }
     })
     .then(res => res.json())
     .then(data => {
         const box = document.getElementById(`check-${id}`);
         const nombre = document.getElementById(`nombre-${id}`);
         if (data.completado) {
-            box.classList.add('checked');
-            box.innerHTML = '✓';
-            nombre.classList.add('done');
+            box.classList.add('checked'); box.innerHTML = '✓'; nombre.classList.add('done');
         } else {
-            box.classList.remove('checked');
-            box.innerHTML = '';
-            nombre.classList.remove('done');
+            box.classList.remove('checked'); box.innerHTML = ''; nombre.classList.remove('done');
         }
     });
 }

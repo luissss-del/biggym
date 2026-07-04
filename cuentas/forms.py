@@ -10,19 +10,19 @@ class RegistroForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['nombre_completo'].widget.attrs.update({'placeholder': 'Nombre completo', 'class': 'input-field'})
-        self.fields['documento'].widget.attrs.update({'placeholder': 'Documento de identidad', 'class': 'input-field'})
-        self.fields['sexo'].widget.attrs.update({'class': 'input-field'})
-        self.fields['password1'].widget.attrs.update({'placeholder': 'Contraseña', 'class': 'input-field'})
-        self.fields['password2'].widget.attrs.update({'placeholder': 'Confirmar contraseña', 'class': 'input-field'})
+        self.fields['nombre_completo'].widget.attrs.update({'placeholder': 'Nombre completo', 'class': 'field'})
+        self.fields['documento'].widget.attrs.update({'placeholder': 'Documento de identidad', 'class': 'field'})
+        self.fields['sexo'].widget.attrs.update({'class': 'field'})
+        self.fields['password1'].widget.attrs.update({'placeholder': 'Contraseña', 'class': 'field'})
+        self.fields['password2'].widget.attrs.update({'placeholder': 'Confirmar contraseña', 'class': 'field'})
 
 
 class LoginForm(forms.Form):
     documento = forms.CharField(
-        widget=forms.TextInput(attrs={'placeholder': 'Documento de identidad', 'class': 'input-field'})
+        widget=forms.TextInput(attrs={'placeholder': 'Documento de identidad', 'class': 'field'})
     )
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'placeholder': 'Contraseña', 'class': 'input-field'})
+        widget=forms.PasswordInput(attrs={'placeholder': 'Contraseña', 'class': 'field'})
     )
 
 class ConfigurarDiasForm(forms.Form):
@@ -45,6 +45,6 @@ class EjercicioForm(forms.ModelForm):
         model = Ejercicio
         fields = ['nombre', 'repeticiones']
         widgets = {
-            'nombre': forms.TextInput(attrs={'placeholder': 'Nombre del ejercicio', 'class': 'input-field'}),
-            'repeticiones': forms.TextInput(attrs={'placeholder': 'Ej: 4x12', 'class': 'input-field'}),
+            'nombre': forms.TextInput(attrs={'placeholder': 'Nombre del ejercicio', 'class': 'field'}),
+            'repeticiones': forms.TextInput(attrs={'placeholder': 'Ej: 4x12', 'class': 'field'}),
         }
