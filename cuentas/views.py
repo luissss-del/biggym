@@ -93,7 +93,8 @@ def configurar_dias_view(request):
 @login_required
 def detalle_dia_view(request, dia_id):
     dia_entrenamiento = get_object_or_404(DiaEntrenamiento, id=dia_id, usuario=request.user)
-    ejercicios = dia_entrenamiento.ejercicios.all()
+    ejercicios_calentamiento = dia_entrenamiento.ejercicios.filter(fase='calentamiento')
+    ejercicios_normal = dia_entrenamiento.ejercicios.filter(fase='normal')
 
     if request.method == 'POST':
         form = EjercicioForm(request.POST)
@@ -103,11 +104,12 @@ def detalle_dia_view(request, dia_id):
             ejercicio.save()
             return redirect('detalle_dia', dia_id=dia_entrenamiento.id)
     else:
-        form = EjercicioForm()
+        form = EjercicioForm(initial={'fase': 'normal'})
 
     return render(request, 'cuentas/detalle_dia.html', {
         'dia_entrenamiento': dia_entrenamiento,
-        'ejercicios': ejercicios,
+        'ejercicios_calentamiento': ejercicios_calentamiento,
+        'ejercicios_normal': ejercicios_normal,
         'form': form,
     })
 

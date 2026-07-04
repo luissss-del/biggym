@@ -73,10 +73,18 @@ class DiaEntrenamiento(models.Model):
         return orden.index(self.dia)
 
 
+
+
 class Ejercicio(models.Model):
+    FASE_CHOICES = (
+        ('calentamiento', 'Calentamiento'),
+        ('normal', 'Entrenamiento normal'),
+    )
+
     dia_entrenamiento = models.ForeignKey(DiaEntrenamiento, on_delete=models.CASCADE, related_name='ejercicios')
     nombre = models.CharField(max_length=150)
     repeticiones = models.CharField(max_length=50, verbose_name="Repeticiones/series")
+    fase = models.CharField(max_length=15, choices=FASE_CHOICES, default='normal')
     completado = models.BooleanField(default=False)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 

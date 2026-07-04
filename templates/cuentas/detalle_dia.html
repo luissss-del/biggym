@@ -11,8 +11,9 @@
 <h1 class="display" style="font-size:34px; margin-top:8px;">{{ dia_entrenamiento.get_dia_display|upper }}</h1>
 <div class="stripe" style="margin-top:10px; margin-bottom:20px;"></div>
 
-{% if ejercicios %}
-    {% for ej in ejercicios %}
+<div class="eyebrow">🔥 Calentamiento</div>
+{% if ejercicios_calentamiento %}
+    {% for ej in ejercicios_calentamiento %}
     <div class="ex-row" id="ej-{{ ej.id }}">
         <div class="plate-check {% if ej.completado %}checked{% endif %}" onclick="toggleEjercicio({{ ej.id }})" id="check-{{ ej.id }}">
             {% if ej.completado %}✓{% endif %}
@@ -28,7 +29,28 @@
     </div>
     {% endfor %}
 {% else %}
-    <div class="empty-note">SIN EJERCICIOS TODAVÍA<br>TOCA + PARA AGREGAR UNO</div>
+    <div class="empty-note" style="margin-top:10px;">SIN EJERCICIOS DE CALENTAMIENTO</div>
+{% endif %}
+
+<div class="eyebrow" style="margin-top:26px;">🏋️ Entrenamiento normal</div>
+{% if ejercicios_normal %}
+    {% for ej in ejercicios_normal %}
+    <div class="ex-row" id="ej-{{ ej.id }}">
+        <div class="plate-check {% if ej.completado %}checked{% endif %}" onclick="toggleEjercicio({{ ej.id }})" id="check-{{ ej.id }}">
+            {% if ej.completado %}✓{% endif %}
+        </div>
+        <div class="ex-info">
+            <div class="ex-name {% if ej.completado %}done{% endif %}" id="nombre-{{ ej.id }}">{{ ej.nombre }}</div>
+            <div class="ex-reps">{{ ej.repeticiones }}</div>
+        </div>
+        <form method="post" action="{% url 'eliminar_ejercicio' ej.id %}" onsubmit="return confirm('¿Eliminar este ejercicio?');">
+            {% csrf_token %}
+            <button type="submit" class="del-btn">✕</button>
+        </form>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="empty-note" style="margin-top:10px;">SIN EJERCICIOS NORMALES</div>
 {% endif %}
 
 <button class="fab" onclick="document.getElementById('modal-ej').style.display='flex';">+</button>
@@ -42,6 +64,8 @@
             {% csrf_token %}
             {{ form.nombre }}
             {{ form.repeticiones }}
+            <label style="font-size:12px; color:var(--fog); font-family:'Space Mono',monospace; text-transform:uppercase; display:block; margin-bottom:6px;">Fase</label>
+            {{ form.fase }}
             <button type="submit" class="btn">Agregar</button>
             <div class="btn btn-ghost" onclick="document.getElementById('modal-ej').style.display='none';" style="margin-top:10px;">Cancelar</div>
         </form>

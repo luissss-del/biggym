@@ -43,8 +43,9 @@ class ConfigurarDiasForm(forms.Form):
 class EjercicioForm(forms.ModelForm):
     class Meta:
         model = Ejercicio
-        fields = ['nombre', 'repeticiones']
+        fields = ['nombre', 'repeticiones', 'fase']
         widgets = {
             'nombre': forms.TextInput(attrs={'placeholder': 'Nombre del ejercicio', 'class': 'field'}),
             'repeticiones': forms.TextInput(attrs={'placeholder': 'Ej: 4x12', 'class': 'field'}),
+            'fase': forms.Select(attrs={'class': 'field'}),
         }
