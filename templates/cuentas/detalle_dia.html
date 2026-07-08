@@ -39,10 +39,10 @@
         <div class="plate-check {% if ej.completado %}checked{% endif %}" onclick="toggleEjercicio({{ ej.id }})" id="check-{{ ej.id }}">
             {% if ej.completado %}✓{% endif %}
         </div>
-        <div class="ex-info">
+        <a href="{% url 'editar_ejercicio' ej.id %}" class="ex-info" style="text-decoration:none; color:inherit;">
             <div class="ex-name {% if ej.completado %}done{% endif %}" id="nombre-{{ ej.id }}">{{ ej.nombre }}</div>
             <div class="ex-reps">{{ ej.repeticiones }}</div>
-        </div>
+        </a>
         <form method="post" action="{% url 'eliminar_ejercicio' ej.id %}" onsubmit="return confirm('¿Eliminar este ejercicio?');">
             {% csrf_token %}
             <button type="submit" class="del-btn">✕</button>

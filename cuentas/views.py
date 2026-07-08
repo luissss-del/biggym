@@ -145,3 +145,20 @@ def agregar_dia_view(request):
                 defaults={'parte_cuerpo': parte_cuerpo}
             )
     return redirect('dashboard')
+
+@login_required
+def editar_ejercicio_view(request, ejercicio_id):
+    ejercicio = get_object_or_404(Ejercicio, id=ejercicio_id, dia_entrenamiento__usuario=request.user)
+
+    if request.method == 'POST':
+        form = EjercicioForm(request.POST, instance=ejercicio)
+        if form.is_valid():
+            form.save()
+            return redirect('detalle_dia', dia_id=ejercicio.dia_entrenamiento.id)
+    else:
+        form = EjercicioForm(instance=ejercicio)
+
+    return render(request, 'cuentas/editar_ejercicio.html', {
+        'form': form,
+        'ejercicio': ejercicio,
+    })
